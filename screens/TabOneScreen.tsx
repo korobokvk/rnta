@@ -1,16 +1,42 @@
-import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import React, {useEffect} from 'react';
+import {StyleSheet, ActivityIndicator} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
 
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
-import { RootTabScreenProps } from '../types';
+import {View, Text} from '../components/Themed';
+import {RootTabScreenProps} from '../types';
+import {selectLocation, selectPending, selectWeather} from '../redux/weather/weatherSelectors';
+import {getWeatherByCityName} from '../redux/weather/weatherThunk';
+import {useLocation} from '../hooks/useLocation';
+import {RectButton} from 'react-native-gesture-handler';
 
-export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
+export default function TabOneScreen({navigation}: RootTabScreenProps<'TabOne'>) {
+  const dispatch = useDispatch();
+  useLocation();
+  const locationState = useSelector(selectLocation);
+  const isLoaded = useSelector(selectPending);
+  const weather = useSelector(selectWeather);
+
+  useEffect(() => {
+    if (locationState) {
+      dispatch(getWeatherByCityName(locationState));
+    }
+  }, [locationState]);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Karri Weather Home</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/TabOneScreen.tsx" />
+      {isLoaded ? (
+        <React.Fragment>
+          <Text style={styles.title}>Welcome to Karri Weather app</Text>
+          <View style={styles.separator}></View>
+          <Text style={styles.title}>
+            Today in {locationState} will be {weather.main}
+          </Text>
+        </React.Fragment>
+      ) : (
+        <View style={styles.horizontal}>
+          <ActivityIndicator size="large" color="#62abe3" />
+        </View>
+      )}
     </View>
   );
 }
@@ -18,8 +44,16 @@ export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+  },
+  getStartedText: {
+    fontSize: 24,
+    lineHeight: 32,
+    textAlign: 'center',
+    margin: 15,
   },
   title: {
     fontSize: 20,
@@ -29,5 +63,10 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     height: 1,
     width: '80%',
+  },
+  horizontal: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 10,
   },
 });

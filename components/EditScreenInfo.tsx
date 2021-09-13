@@ -1,34 +1,38 @@
-import * as WebBrowser from 'expo-web-browser';
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React, {useEffect} from 'react';
+import {StyleSheet, TouchableHighlight} from 'react-native';
+import {ListItem} from 'react-native-elements';
+import {useDispatch} from 'react-redux';
 
-import { Text, View } from './Themed';
+import {Text, View} from './Themed';
 
+type EditScreenProps = {city: string | null; onPress?: () => void};
 
-export default function EditScreenInfo({ path }: { path: string }) {
-
+export default function EditScreenInfo({city, onPress}: EditScreenProps) {
+  useEffect(() => {
+    (async () => {})();
+  });
   return (
     <View>
-      <View style={styles.getStartedContainer}>
-        <Text
-          style={styles.getStartedText}
-          lightColor="rgba(0,0,0,0.8)"
-          darkColor="rgba(255,255,255,0.8)">
-          Welcome Screen ;)
-        </Text>
-      </View>
+      <ListItem
+        underlayColor="#62abe3"
+        Component={TouchableHighlight}
+        containerStyle={{
+          borderWidth: 1,
+          borderColor: 'black',
+          borderRadius: 6,
+          margin: 5,
+        }}
+        onPress={onPress}
+        pad={20}>
+        <ListItem.Content>
+          <ListItem.Title>
+            <Text>{city}</Text>
+          </ListItem.Title>
+          <ListItem.Subtitle>
+            <Text>Tap to see more</Text>
+          </ListItem.Subtitle>
+        </ListItem.Content>
+      </ListItem>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  getStartedContainer: {
-    marginHorizontal: 25,
-  },
-  getStartedText: {
-    fontSize: 24,
-    lineHeight: 32,
-    textAlign: 'left',
-    marginBottom: 15
-  }
-});
